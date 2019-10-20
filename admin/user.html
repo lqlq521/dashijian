@@ -56,7 +56,8 @@
                 <div class="form-group">
                     <label for="inputEmail4" class="col-sm-2 control-label">密码：</label>
                     <div class="col-sm-4">
-                        <input type="password" name="password" class="form-control password" id="inputEmail4" value="12345678">
+                        <input type="password" name="password" class="form-control password" id="inputEmail4"
+                            value="12345678">
                     </div>
                 </div>
                 <div class="form-group">
@@ -67,19 +68,81 @@
             </form>
         </div>
     </div>
-</body>
-<script>
-    $(function() {
-        $.ajax({
-            url: BigNew.user_detail,
-            success: function(backData) {
-                for (const key in backData.data) {
-                    $("." + key).val(backData.data[key])
+    <script>
+        // 入口函数
+        $(function () {
+            // 用户详情获取
+            $.ajax({
+                url:BigNew.user_detail,
+                // backData
+                success:function(backData){
+                    console.log(backData);
+                    // 挨个设置
+                    // $(".username").val(backData.data.username);
+                    // $(".nickname").val(backData.data.nickname);
+                    // $(".email").val(backData.data.email);
+                    // $(".password").val(backData.data.password);
+
+                    // 标签元素的 标记和 数据有相同部分
+                    // key 对象的键
+                    for (const key in backData.data) {
+                        // 对象可以 点语法  也可以 中括号
+                        $("."+key).val(backData.data[key]);
+                    }
+
+                    // 单独设置图片
+                    $(".user_pic").attr("src",backData.data.userPic);
                 }
-                $(".user_pic").attr("src", backData.data.userPic);
-            }
+            })
+       
+       
+            // 个人数据修改
+            $(".btn-edit").click(function (e) { 
+                // 阻止默认行为
+                e.preventDefault();
+                // 创建formData
+                // formData需要传入dom对象
+                // $('form') jQ对象
+                // $('form')[0]获取dom元素
+                // var data = new FormData($('form')[0]);
+                var data = new FormData(document.querySelector('form'));
+                // ajax
+                $.ajax({
+                    url:BigNew.user_edit,
+                    type:"post",
+                    data:data,
+                    // 不设置类型
+                    contentType:false,
+                    // 不处理数据
+                    processData:false,
+                    success:function(backData){
+                        console.log(backData);
+                        // 如果更新成功
+                        if(backData.code==200){
+                            // 刷新页面 刷新自己
+                            // window.location.reload();
+                            // 刷新父页面
+                            window.parent.location.reload()
+                        }
+                    }
+                })
+             })
+
+            
+            // 本地图片预览
+            $("#exampleInputFile").change(function () { 
+                // 生成url
+                var url = URL.createObjectURL(this.files[0]);
+                // 设置给img的src
+                // prev 获取前一个兄弟节点
+                // $(this).prev('img').attr('src',url);
+                // 兄弟节点中的`img`标签
+                $(this).siblings('img').attr('src',url);
+             })
+
         })
-    })
-</script>
+
+    </script>
+</body>
 
 </html>
